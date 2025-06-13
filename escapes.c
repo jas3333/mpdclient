@@ -58,7 +58,6 @@ void deleteToEnd() {
 void deleteToCursor() {
 	printf("\x1b[1K");
 	fflush(stdout);
-
 }
 
 void setBGColor(int color) {

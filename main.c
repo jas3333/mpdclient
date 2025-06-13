@@ -27,19 +27,25 @@ int main() {
 	int queue_len = 0;
 	load_queue(conn, queue, &queue_len);
 
+	// Queue config
+	QueueData qc;
 
-	// q_index keeps track of selected song
-	int q_index = 0;
+	// Queue Index
+	qc.q_index = 0;
 
-	// Scroll offset is the offset for the q_index, it will be half the visible lines  
-	int scroll_offset = 0;
+	// Scroll offset
+	qc.s_offset = 0;
 
-	// visible_lines shows total songs being shown in the queue area
-	int visible_lines = y - 11;
+	// Visible lines
+	qc.vlines = y - 11;
 
-	// Sets the queue area to 8 chars down 
-	int top_offset = 8;
-	draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue, q_index);
+	// Top offset
+	qc.t_offset = 8;
+
+	// Queue length
+	qc.qlen = queue_len;
+
+	draw_queue(conn, queue,  &qc);
 	draw_headers();
 	
 	char ch = 0;
@@ -64,73 +70,73 @@ int main() {
 				else if (ch == 'f') mpd_run_seek_current(conn, 2, true);
 				else if (ch == 'b') mpd_run_seek_current(conn, -3, true);
 				else if (ch == 'j') {
-					if (q_index < queue_len - 1) {
-						q_index++;
+					if (qc.q_index < qc.qlen - 1) {
+						qc.q_index++;
 					}
-					if (q_index - scroll_offset >= visible_lines / 2 && scroll_offset + visible_lines < queue_len) {
-						scroll_offset++;
+					if (qc.q_index - qc.s_offset >= qc.vlines / 2 && qc.s_offset + qc.vlines < qc.qlen) {
+						qc.s_offset++;
 					}
-					draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue,q_index );
+					draw_queue(conn, queue, &qc);
 				}
 				else if (ch == 'J') {
-					if (q_index + 10 < queue_len - 1) {
-						q_index += 10;
+					if (qc.q_index + 10 < qc.qlen - 1) {
+						qc.q_index += 10;
 					}
-					else q_index = queue_len - 1;
+					else qc.q_index = qc.qlen- 1;
 
-					if (q_index - scroll_offset >= visible_lines / 2 && scroll_offset + visible_lines < queue_len) {
-						if (scroll_offset < queue_len - 50) {
-							scroll_offset += 10;
+					if (qc.q_index - qc.s_offset >= qc.vlines / 2 && qc.s_offset + qc.vlines < qc.qlen) {
+						if (qc.s_offset < qc.qlen - 50) {
+							qc.s_offset += 10;
 						}
 						else {
-							scroll_offset = q_index - 50;
-							q_index = queue_len - 1;
+							qc.s_offset = qc.q_index - 50;
+							qc.q_index = qc.qlen - 1;
 						}
 					}
-					draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue,q_index );
+					draw_queue(conn, queue, &qc);
 				}
 				else if (ch == 'k') {
-					if (q_index > 0) {
-						q_index--;
+					if (qc.q_index > 0) {
+						qc.q_index--;
 					}
-					if (q_index - scroll_offset < visible_lines / 2 && scroll_offset > 0) {
-						scroll_offset--;
+					if (qc.q_index - qc.s_offset < qc.vlines / 2 && qc.s_offset > 0) {
+						qc.s_offset--;
 					} 
 
-					draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue, q_index);
+					draw_queue(conn, queue, &qc);
 				}
 				else if (ch == 'K') {
-					if (q_index - 10 > 0) {
-						q_index -= 10;
+					if (qc.q_index - 10 > 0) {
+						qc.q_index -= 10;
 					} 
 					else {
-						q_index = 0;
+						qc.q_index = 0;
 					}
 
-					if (q_index - scroll_offset < visible_lines / 2 && scroll_offset > 0) {
-						if (scroll_offset < 10) scroll_offset = 0;
+					if (qc.q_index - qc.s_offset < qc.vlines / 2 && qc.s_offset > 0) {
+						if (qc.s_offset < 10) qc.s_offset = 0;
 						else {
-							scroll_offset -= 10;
+							qc.s_offset -= 10;
 						}
 					} 
 
-					draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue, q_index);
+					draw_queue(conn, queue, &qc);
 				}
 				else if (ch == '\r') {
-					mpd_run_play_pos(conn, q_index);
-					draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue,q_index );
+					mpd_run_play_pos(conn, qc.q_index);
+					draw_queue(conn, queue, &qc);
 				}
 				else if (ch == 'G') {
-					q_index = queue_len - 1;
-					scroll_offset = queue_len - visible_lines;
-					draw_queue(conn, scroll_offset, visible_lines, top_offset, queue_len, queue, q_index);
+					qc.q_index = qc.qlen - 1;
+					qc.s_offset = qc.qlen - qc.vlines;
+					draw_queue(conn, queue, &qc);
 				}
 				else if (ch == 'g') {
-					q_index = 0;
-					scroll_offset = 0;
-					visible_lines = y - 11;
-					top_offset = 8;
-					draw_queue(conn, q_index, visible_lines, top_offset, queue_len, queue, q_index);
+					qc.q_index = 0;
+					qc.s_offset = 0;
+					qc.vlines = y - 11;
+					qc.t_offset = 8;
+					draw_queue(conn, queue, &qc);
 
 				}
 			}

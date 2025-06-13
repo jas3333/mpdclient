@@ -42,6 +42,14 @@ typedef struct {
 	bool dirty;
 } QueueWidget;
 
+typedef struct {
+	int q_index;
+	int s_offset;
+	int vlines;
+	int t_offset;
+	int qlen;
+} QueueData;
+
 // Escapes.c
 void cls(); 
 void cursor_h(); 
@@ -75,7 +83,7 @@ void draw_song_stats_widget(SongStatsWidget *widget);
 void draw_mpd_status_widget(MPDStatusWidget *widget); 
 void draw_now_playing_widget(NowPlayingWidget *widget); 
 void draw_progress_bar(SongStatsWidget *widget); 
-void draw_queue(struct mpd_connection *conn, int start_index, int height, int y_offset, int queue_len, SongEntry *queue, int selected_index); 
+void draw_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc); 
 void draw_headers();
 
 // Mpd Functions

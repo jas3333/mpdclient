@@ -124,7 +124,7 @@ void draw_headers() {
 	fflush(stdout);
 }
 
-void draw_queue(struct mpd_connection *conn, int start_index, int height, int y_offset, int queue_len, SongEntry *queue, int selected_index) {
+void draw_queue(struct mpd_connection *conn,  SongEntry *queue, QueueData *qconfig) {
 
 	struct mpd_status *status = mpd_run_status(conn);
 	int song_pos = mpd_status_get_song_pos(status);
@@ -140,22 +140,22 @@ void draw_queue(struct mpd_connection *conn, int start_index, int height, int y_
 	int w_album		= total_width * 30 / 100;
 	int w_duration  = total_width * 10 / 100;
 
-	for (int i = 0; i < height; i++) {
-		int song_index = start_index + i;
-		move_cursor(y_offset + i, 1);
+	for (int i = 0; i < qconfig->vlines; i++) {
+		int song_index = qconfig->s_offset + i;
+		move_cursor(qconfig->t_offset + i, 1);
 		eraseLine();
 
-		if (song_index < queue_len) {
+		if (song_index < qconfig->qlen) {
 			char buffer[16];
 			snprintf(buffer, sizeof(buffer), "%2u:%02u", queue[song_index].duration / 60, queue[song_index].duration % 60);
 
-			if (song_index == selected_index) {
+			if (song_index == qconfig->q_index) {
 				setItalic();
 				setBGColor(12);
 				setFGColor(0);
 			}
 
-			if (song_index == song_pos && song_index != selected_index) {
+			if (song_index == song_pos && song_index != qconfig->q_index) {
 				setFGColor(75);
 				printf("%-*s %-*s %-*s %*s", w_artist, queue[song_index].artist, w_title, queue[song_index].title, w_album, queue[song_index].album, w_duration, buffer);
 				resetColor();
@@ -164,7 +164,7 @@ void draw_queue(struct mpd_connection *conn, int start_index, int height, int y_
 
 			printf("%-*s %-*s %-*s %*s", w_artist, queue[song_index].artist, w_title, queue[song_index].title, w_album, queue[song_index].album, w_duration, buffer);
 
-			if (song_index == selected_index) {
+			if (song_index == qconfig->q_index) {
 				resetItalic();
 				resetColor();
 			}
