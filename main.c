@@ -1,10 +1,13 @@
+#include <locale.h>
 #include <stdio.h>
 #include <sys/select.h>
 #include <term.h>
 #include <unistd.h>
 #include "main.h"
 
+
 int main() {
+	setlocale(LC_ALL, "");
 
 	initTerm();
 	hide_cursor();
@@ -67,8 +70,8 @@ int main() {
 					break;
 				}
 				else if (ch == 'p') toggle_play_pause(conn);
-				else if (ch == 'f') mpd_run_seek_current(conn, 2, true);
-				else if (ch == 'b') mpd_run_seek_current(conn, -3, true);
+				else if (ch == 'f' || ch == 'l') mpd_run_seek_current(conn, 2, true);
+				else if (ch == 'b' || ch == 'h') mpd_run_seek_current(conn, -3, true);
 				else if (ch == 'j') {
 					if (qc.q_index < qc.qlen - 1) {
 						qc.q_index++;

@@ -1,7 +1,10 @@
+#define _XOPEN_SOURCE 700
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/select.h>
 #include <term.h>
+#include <wchar.h>
 #include "main.h"
 
 void draw_song_stats_widget(SongStatsWidget *widget) {
@@ -83,7 +86,7 @@ void draw_progress_bar(SongStatsWidget *widget) {
 	int empty_width = x - progress_width;
 
 
-	setFGColor(12);
+	setFGColor(26);
 	for (int i = 0; i < progress_width - 1; i++) {
         printf("▋");
 	}
@@ -117,11 +120,41 @@ void draw_headers() {
 	move_cursor(6, 1);
 	printf("%-*s %-*s %-*s %*s", w_artist, "Artist", w_title, "Title", w_album, "Album", w_duration, "Duration");
 
-	setFGColor(12);
+	setFGColor(26);
 	draw_line(5, 1, x - 1, "⎽");
 	draw_line(7, 1, x - 1, "⎺");
 
 	fflush(stdout);
+}
+
+int utf8_display_width(const char *s) {
+	int width = 0;
+	mbstate_t ps = {0};
+	wchar_t wc;
+	size_t len;
+
+	while (*s) {
+		len = mbrtowc(&wc, s, MB_CUR_MAX, &ps);
+		if (len == (size_t)-1 || len == (size_t)-2) {
+			s++; 
+			continue;
+		}
+		if (len == 0)
+			break;
+
+		int w = wcwidth(wc);
+		width += (w >= 0) ? w : 0;
+		s += len;
+	}
+	return width;
+}
+
+void print_aligned(const char *s, int field_width) {
+	int w = utf8_display_width(s);
+	printf("%s", s);
+	for (int i = 0; i < field_width - w; i++) {
+		putchar(' ');
+	}
 }
 
 void draw_queue(struct mpd_connection *conn,  SongEntry *queue, QueueData *qconfig) {
@@ -151,22 +184,37 @@ void draw_queue(struct mpd_connection *conn,  SongEntry *queue, QueueData *qconf
 
 			if (song_index == qconfig->q_index) {
 				setItalic();
-				setBGColor(12);
-				setFGColor(0);
+				setBGColor(26);
+				setFGColor(255);
 			}
 
 			if (song_index == song_pos && song_index != qconfig->q_index) {
 				setFGColor(75);
-				printf("%-*s %-*s %-*s %*s", w_artist, queue[song_index].artist, w_title, queue[song_index].title, w_album, queue[song_index].album, w_duration, buffer);
+				print_aligned(queue[song_index].artist,  w_artist);
+				putchar(' ');
+				print_aligned(queue[song_index].title,   w_title);
+				putchar(' ');
+				print_aligned(queue[song_index].album,   w_album);
+				putchar(' ');
+				printf("%*s", w_duration, buffer);
+
 				resetColor();
 				continue;
 			}
 
-			printf("%-*s %-*s %-*s %*s", w_artist, queue[song_index].artist, w_title, queue[song_index].title, w_album, queue[song_index].album, w_duration, buffer);
+
+			print_aligned(queue[song_index].artist,  w_artist);
+			putchar(' ');
+			print_aligned(queue[song_index].title,   w_title);
+			putchar(' ');
+			print_aligned(queue[song_index].album,   w_album);
+			putchar(' ');
+			printf("%*s", w_duration, buffer);
 
 			if (song_index == qconfig->q_index) {
 				resetItalic();
 				resetColor();
+				resetModes();
 			}
 		}
 	}

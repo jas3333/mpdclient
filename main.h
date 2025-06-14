@@ -3,11 +3,14 @@
 
 #include <stdbool.h>
 #include <mpd/client.h>
+#include <wchar.h>
+#include <locale.h>
 
-#define MAX_TITLE_LEN 40 
+#define MAX_TITLE_LEN 64 
 #define MAX_ARTIST_LEN 40 
-#define MAX_ALBUM_LEN 40 
+#define MAX_ALBUM_LEN 48
 #define MAX_SONGS 10240
+
 
 typedef struct {
 	char title[MAX_TITLE_LEN];
@@ -64,6 +67,9 @@ void resetItalic();
 void deleteToEnd(); 
 void deleteToCursor(); 
 void setBGColor(int color); 
+void setBold(); 
+void resetModes(); 
+void moveCursorX(int yCoord, int percent); 
 
 // Terminal.c
 void initTerm(); 

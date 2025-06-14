@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "main.h"
 
 void move_cursor(int y, int x) {
 	printf("\x1b[%d;%dH", y, x);
@@ -46,6 +48,15 @@ void setItalic() {
 	fflush(stdout);
 }
 
+void setBold() {
+	printf("\x1b[1;31m");
+	fflush(stdout);
+}
+void resetModes() {
+	printf("\x1b[0m");
+	fflush(stdout);
+}
+
 void resetItalic() {
 	printf("\x1b[23m");
 	fflush(stdout);
@@ -63,4 +74,19 @@ void deleteToCursor() {
 void setBGColor(int color) {
 	printf("\x1b[48;5;%dm", color);
 	fflush(stdout);
+}
+
+
+void moveCursorX(int yCoord, int percent) {
+    int rows, cols;
+    getTerminalSize(&rows, &cols);
+
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
+
+    int targetX = (cols * percent) / 100;
+    if (targetX < 1) targetX = 1; 
+
+    printf("\033[%d;%dH", yCoord, targetX);
+    fflush(stdout);
 }
