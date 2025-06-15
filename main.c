@@ -67,91 +67,19 @@ int main() {
 
 		if (FD_ISSET(STDIN_FILENO, &readfds)) {
 			if (read(STDIN_FILENO, &ch, 1) > 0) {
-				if (ch == 'q') {
-					break;
-				}
+				if (ch == 'q') break;
 				else if (ch == 'p') toggle_play_pause(conn);
 				else if (ch == 'f' || ch == 'l') mpd_run_seek_current(conn, 2, true);
 				else if (ch == 'b' || ch == 'h') mpd_run_seek_current(conn, -3, true);
-				else if (ch == 'j') {
-					if (qc.q_index < qc.qlen - 1) {
-						qc.q_index++;
-					}
-					if (qc.q_index - qc.s_offset >= qc.vlines / 2 && qc.s_offset + qc.vlines < qc.qlen) {
-						qc.s_offset++;
-					}
-					draw_queue(conn, queue, &qc);
-				}
-				else if (ch == 'J') {
-					if (qc.q_index + 10 < qc.qlen - 1) {
-						qc.q_index += 10;
-					}
-					else qc.q_index = qc.qlen- 1;
-
-					if (qc.q_index - qc.s_offset >= qc.vlines / 2 && qc.s_offset + qc.vlines < qc.qlen) {
-						if (qc.s_offset < qc.qlen - 50) {
-							qc.s_offset += 10;
-						}
-						else {
-							qc.s_offset = qc.q_index - 50;
-							qc.q_index = qc.qlen - 1;
-						}
-					}
-					draw_queue(conn, queue, &qc);
-				}
-				else if (ch == 'k') {
-					if (qc.q_index > 0) {
-						qc.q_index--;
-					}
-					if (qc.q_index - qc.s_offset < qc.vlines / 2 && qc.s_offset > 0) {
-						qc.s_offset--;
-					} 
-
-					draw_queue(conn, queue, &qc);
-				}
-				else if (ch == 'K') {
-					if (qc.q_index - 10 > 0) {
-						qc.q_index -= 10;
-					} 
-					else {
-						qc.q_index = 0;
-					}
-
-					if (qc.q_index - qc.s_offset < qc.vlines / 2 && qc.s_offset > 0) {
-						if (qc.s_offset < 10) qc.s_offset = 0;
-						else {
-							qc.s_offset -= 10;
-						}
-					} 
-
-					draw_queue(conn, queue, &qc);
-				}
-				else if (ch == '\r') {
-					mpd_run_play_pos(conn, qc.q_index);
-					draw_queue(conn, queue, &qc);
-				}
-				else if (ch == 'G') {
-					qc.q_index = qc.qlen - 1;
-					qc.s_offset = qc.qlen - qc.vlines;
-					draw_queue(conn, queue, &qc);
-				}
-				else if (ch == 'g') {
-					qc.q_index = 0;
-					qc.s_offset = 0;
-					qc.vlines = y - 11;
-					qc.t_offset = 8;
-					draw_queue(conn, queue, &qc);
-
-				}
-				else if (ch == '.') {
-					mpd_run_change_volume(conn, 5);
-					drawVolume(conn);
-				}
-				else if (ch == ',') {
-					mpd_run_change_volume(conn, -5);
-					drawVolume(conn);
-
-				}
+				else if (ch == 'j') handleNavUp(conn, &qc, queue);
+				else if (ch == 'J') handlePageDown(conn, &qc, queue); 
+				else if (ch == 'k') handleNavDown(conn, &qc, queue);
+				else if (ch == 'K') handlePageUp(conn, &qc, queue); 
+				else if (ch == '\r') playSelected(conn, &qc, queue);
+				else if (ch == 'G') jumpToBottom(conn, &qc, queue); 
+				else if (ch == 'g') jumpToTop(conn, &qc, queue); 
+				else if (ch == '.') volumeUp(conn); 
+				else if (ch == ',') volumeDown(conn); 
 			}
 		}
 

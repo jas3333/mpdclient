@@ -96,4 +96,15 @@ void drawVolume(struct mpd_connection *connection);
 // Mpd Functions
 void toggle_play_pause(struct mpd_connection *conn); 
 
+// input.c
+void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void handleNavDown(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void handlePageDown(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void handlePageUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void playSelected(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void jumpToBottom(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void jumpToTop(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
+void volumeUp(struct mpd_connection *connection); 
+void volumeDown(struct mpd_connection *connection); 
+
 #endif

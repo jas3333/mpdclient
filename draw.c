@@ -229,7 +229,9 @@ void drawVolume(struct mpd_connection *connection) {
 	char *shadeBlock = "░";
 
 	setFGColor(12);
-	moveCursorX(2, 90);
+	moveCursorX(2, 89);
+	deleteToEnd();
+
 	printf("Volume: ");
 	for (int i = 0; i < volumeBlockCount; i++) {
 		printf("%s", volumeBlock);
@@ -237,6 +239,8 @@ void drawVolume(struct mpd_connection *connection) {
 	for (int i = 0; i < shadeBlockCount; i++) {
 		printf("%s", shadeBlock);
 	}
+
+	printf(" %d%%", volume);
 
 	resetColor();
 }
