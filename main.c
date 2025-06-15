@@ -50,6 +50,7 @@ int main() {
 
 	draw_queue(conn, queue,  &qc);
 	draw_headers();
+	drawVolume(conn);
 	
 	char ch = 0;
 	while (1) {
@@ -140,6 +141,15 @@ int main() {
 					qc.vlines = y - 11;
 					qc.t_offset = 8;
 					draw_queue(conn, queue, &qc);
+
+				}
+				else if (ch == '.') {
+					mpd_run_change_volume(conn, 5);
+					drawVolume(conn);
+				}
+				else if (ch == ',') {
+					mpd_run_change_volume(conn, -5);
+					drawVolume(conn);
 
 				}
 			}

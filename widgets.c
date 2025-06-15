@@ -122,3 +122,5 @@ void load_queue(struct mpd_connection *conn, SongEntry *queue, int *queue_len) {
 
 	mpd_response_finish(conn);
 }
+
+

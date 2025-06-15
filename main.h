@@ -91,6 +91,7 @@ void draw_now_playing_widget(NowPlayingWidget *widget);
 void draw_progress_bar(SongStatsWidget *widget); 
 void draw_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc); 
 void draw_headers();
+void drawVolume(struct mpd_connection *connection); 
 
 // Mpd Functions
 void toggle_play_pause(struct mpd_connection *conn); 

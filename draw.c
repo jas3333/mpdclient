@@ -219,3 +219,24 @@ void draw_queue(struct mpd_connection *conn,  SongEntry *queue, QueueData *qconf
 		}
 	}
 }
+
+void drawVolume(struct mpd_connection *connection) {
+	int volume = mpd_run_get_volume(connection);
+	int volumeBlockCount = abs(volume / 10);
+	int shadeBlockCount = 10 - volumeBlockCount;
+
+	char *volumeBlock = "▊";
+	char *shadeBlock = "░";
+
+	setFGColor(12);
+	moveCursorX(2, 90);
+	printf("Volume: ");
+	for (int i = 0; i < volumeBlockCount; i++) {
+		printf("%s", volumeBlock);
+	}
+	for (int i = 0; i < shadeBlockCount; i++) {
+		printf("%s", shadeBlock);
+	}
+
+	resetColor();
+}
