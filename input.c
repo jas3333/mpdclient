@@ -50,6 +50,7 @@ void jumpToBottom(struct mpd_connection *connection, QueueData *qc, SongEntry *q
 	qc->s_offset = qc->qlen - qc->vlines;
 	draw_queue(connection, queue, qc);
 }
+
 void jumpToTop(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {
 	int y, x;
 	getTerminalSize(&y, &x);

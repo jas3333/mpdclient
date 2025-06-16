@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include "main.h"
 
@@ -49,6 +50,47 @@ int listDirectory(struct mpd_connection *connection, const char *path, Entry *en
 	return count;
 }
 
-void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entry *entries, QueueData *qc) {
-	mpd_run_add(connection, entries[state->selected].name);
+void setAlert(Alert *alert, const char *message, int duration) {
+	alert->duration = duration;
+	alert->startTime = time(NULL);
+	alert->display = true;
+	snprintf(alert->message, sizeof(alert->message), "%s", message);
 }
+
+void drawAlert(Alert *alert) {
+	if (!alert->display) return;
+
+	int y, x;
+	int centerY, centerX;
+	int messageLength = strlen(alert->message);
+
+	getTerminalSize(&y, &x);
+	getCenter(&centerY, &centerX, messageLength);
+
+	time_t timeNow = time(NULL);
+	if (timeNow - alert->startTime >= alert->duration) {
+		alert->display = false;
+		move_cursor(4, 1);
+		deleteToEnd();
+	}
+	else {
+		alert->display = true;
+		move_cursor(4, centerX);
+		setFGColor(40);
+		printf("%s", alert->message);
+		fflush(stdout);
+	}
+
+	resetColor();
+}
+
+void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entry *entries, QueueData *qc, Alert *alert) {
+	mpd_run_add(connection, entries[state->selected].name);
+	char buffer[1024];
+	snprintf(buffer, sizeof(buffer), "🔔 Added to queue: %s", entries[state->selected].name);
+	setAlert(alert, buffer, 5);
+}
+
+
+
+

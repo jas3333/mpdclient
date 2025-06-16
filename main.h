@@ -69,6 +69,14 @@ typedef struct {
 	char pathStack[MAX_DEPTH][512];
 } DirState;
 
+typedef struct {
+	int duration;
+	time_t startTime;
+	bool display;
+	char message[1024];
+
+} Alert;
+
 // Escapes.c
 void cls(); 
 void cursor_h(); 
@@ -115,6 +123,9 @@ void displayEntries(Entry *entries, DirState *state);
 // Mpd Functions
 void toggle_play_pause(struct mpd_connection *conn); 
 int listDirectory(struct mpd_connection *connection, const char *path, Entry *entries); 
+void setAlert(Alert *alert, const char *message, int duration); 
+void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entry *entries, QueueData *qc, Alert *alert); 
+void drawAlert(Alert *alert); 
 
 // input.c
 void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 

@@ -14,6 +14,8 @@ int main() {
 
 	setlocale(LC_ALL, "");
 
+	Alert alerts = {0};
+
 	initTerm();
 	hide_cursor();
 	cls();
@@ -88,7 +90,12 @@ int main() {
 								clearViewArea(); 
 								drawDirectoryHeader();
 								displayEntries(entries, &nav);
-
+								break;
+							case 'o': 
+								mode = MODE_BROWSER; 
+								clearViewArea(); 
+								drawDirectoryHeader();
+								displayEntries(entries, &nav);
 								break;
 							case 'p' : toggle_play_pause(conn);
 							case 'f' : mpd_run_seek_current(conn, 2, true); break;
@@ -104,6 +111,16 @@ int main() {
 							case 'g' : jumpToTop(conn, &qc, queue); break;
 							case '.' : volumeUp(conn); break;
 							case ',' : volumeDown(conn); break;
+							case 'd': 
+								mpd_run_delete(conn, qc.q_index);
+								load_queue(conn, queue, &qc);
+								draw_queue(conn, queue, &qc); 
+								break;
+							case 'D': 
+								mpd_run_clear(conn);
+								load_queue(conn, queue, &qc);
+								draw_queue(conn, queue, &qc); 
+								break;
 							default: break;
 						}
 					break;
@@ -116,21 +133,32 @@ int main() {
 								draw_headers(); 
 								draw_queue(conn, queue, &qc); 
 								break;
+							case 'o': 
+								mode = MODE_QUEUE; 
+								clearViewArea();
+								draw_headers(); 
+								draw_queue(conn, queue, &qc); 
+								break;
+							case '.' : volumeUp(conn); break;
+							case ',' : volumeDown(conn); break;
+							case 'p' : toggle_play_pause(conn);
+							case 'f' : mpd_run_seek_current(conn, 2, true); break;
+							case 'b' : mpd_run_seek_current(conn, -3, true); break;
 							case 'j': directoryNavDown(&nav, entries); break; 
 							case 'k': directoryNavUp(&nav, entries); break; 
 							case 'l': directoryNavForward(conn, &nav, entries); break;
 							case 'h': directoryNavBack(conn, &nav, entries); break;
 							case 'a': 
-								mpd_run_add(conn, entries[nav.selected].name);
+								addSelectedToQueue(conn, &nav, entries, &qc, &alerts);
 								load_queue(conn, queue, &qc);
 								break;
-
-
+							case 'i': 
+								addSelectedToQueue(conn, &nav, entries, &qc, &alerts);
+								load_queue(conn, queue, &qc);
+								break;
 							default: break;
-
 						}
 					break;
-
 				}
 			}
 		}
@@ -144,6 +172,7 @@ int main() {
 
 		update_song_stats_widget(conn, &songStatus);
 		draw_song_stats_widget(&songStatus);
+		drawAlert(&alerts);
 	}
 
 	return 0;
