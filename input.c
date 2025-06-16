@@ -1,13 +1,15 @@
+#include <string.h>
 #include "main.h"
 
-void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {
+
+void handleNavDown(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {
 	if (qc->q_index < qc->qlen - 1) qc->q_index++; 
 	if (qc->q_index - qc->s_offset >= qc->vlines / 2 && qc->s_offset + qc->vlines < qc->qlen) qc->s_offset++;
 	draw_queue(connection, queue, qc);
 }
 
 
-void handleNavDown(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {
+void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {
 	if (qc->q_index > 0) qc->q_index--;
 	if (qc->q_index - qc->s_offset < qc->vlines / 2 && qc->s_offset > 0) qc->s_offset--;
 	draw_queue(connection, queue, qc);
@@ -67,5 +69,44 @@ void volumeUp(struct mpd_connection *connection) {
 void volumeDown(struct mpd_connection *connection) {
 	mpd_run_change_volume(connection, -5);
 	drawVolume(connection);
+}
+
+void directoryNavDown(DirState *state, Entry *entries) {
+	if (state->selected < state->entryCount - 1) state->selected++; 
+	if (state->selected - state->s_offset >= state->vlines / 2 && state->s_offset + state->vlines < state->entryCount) state->s_offset++;
+
+	displayEntries(entries, state);
+}
+
+void directoryNavUp(DirState *state, Entry *entries) {
+	if (state->selected > 0) state->selected--;
+	if (state->selected - state->s_offset < state->vlines / 2 && state->s_offset > 0) state->s_offset--;
+
+	displayEntries(entries, state);
+}
+
+void directoryNavForward(struct mpd_connection *connection, DirState *state, Entry *entries) {
+	if (entries[state->selected].is_dir) {
+		strncpy(state->pathStack[state->depth], entries[state->selected].name, sizeof(state->pathStack[state->depth]));
+		state->entryCount = listDirectory(connection, state->pathStack[state->depth], entries);
+		state->depth++;
+		state->selected = 0;
+		clearViewArea();
+	}
+	drawDirectoryHeader();
+	displayEntries(entries, state);
+}
+
+void directoryNavBack(struct mpd_connection *connection, DirState *state, Entry *entries) {
+	if (state->depth != 0) {
+		state->depth--;
+		state->entryCount = listDirectory(connection, state->pathStack[state->depth - 1], entries);
+		state->selected = 0;
+		state->s_offset = 0;
+		clearViewArea();
+	}
+
+	drawDirectoryHeader();
+	displayEntries(entries, state);
 }
 

@@ -172,6 +172,7 @@ void draw_queue(struct mpd_connection *conn,  SongEntry *queue, QueueData *qconf
 	int w_title		= total_width * 35 / 100;
 	int w_album		= total_width * 30 / 100;
 	int w_duration  = total_width * 10 / 100;
+	resetColor();
 
 	for (int i = 0; i < qconfig->vlines; i++) {
 		int song_index = qconfig->s_offset + i;
@@ -243,4 +244,61 @@ void drawVolume(struct mpd_connection *connection) {
 	printf(" %d%%", volume);
 
 	resetColor();
+}
+
+void drawDirectoryHeader() {
+	int y;
+	int x;
+	getTerminalSize(&y, &x);
+	int total_width = x - 2;
+
+	move_cursor(6, 1);
+	printf("Directories:");
+
+	setFGColor(26);
+	draw_line(5, 1, x - 1, "⎽");
+	draw_line(7, 1, x - 1, "⎺");
+
+	fflush(stdout);
+
+}
+
+void clearViewArea() {
+	int y, x;
+	getTerminalSize(&y, &x);
+
+	int visibleArea = y - 8;
+
+	for (int i = 0; i < visibleArea; i++) {
+		move_cursor(5 + i, 1);
+		deleteToEnd();
+	}
+}
+
+void displayEntries(Entry *entries, DirState *state) {
+	resetColor();
+	for (int i = 0; i < state->vlines; i++) {
+		int index = state->s_offset + i;
+		move_cursor(8 + i, 1);
+		eraseLine();
+
+		if (index >= state->entryCount) continue;
+		if (index == state->selected) {
+			setBGColor(12);
+			setFGColor(255);
+		}
+
+		char buffer[512];
+		strncpy(buffer, entries[index].name, sizeof(buffer));
+		char *lastToken = NULL;
+		char *token = strtok(buffer, "/");
+		while (token != NULL) {
+			lastToken = token;
+			token = strtok(NULL, "/");
+		}
+
+		printf("%s", lastToken);
+
+		if (index == state->selected) resetColor();
+	}
 }

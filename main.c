@@ -5,8 +5,13 @@
 #include <unistd.h>
 #include "main.h"
 
+typedef enum {
+	MODE_QUEUE,
+	MODE_BROWSER
+} AppMode;
 
 int main() {
+
 	setlocale(LC_ALL, "");
 
 	initTerm();
@@ -52,6 +57,13 @@ int main() {
 	draw_headers();
 	drawVolume(conn);
 	
+	// Browser Mode Items
+	AppMode mode = MODE_QUEUE;
+	Entry entries[1024];
+
+	DirState nav = { .depth = 0, .selected = 0, .entryCount = 0, .vlines = y - 11};
+	nav.entryCount = listDirectory(conn, NULL, entries); 
+
 	char ch = 0;
 	while (1) {
 
@@ -68,18 +80,54 @@ int main() {
 		if (FD_ISSET(STDIN_FILENO, &readfds)) {
 			if (read(STDIN_FILENO, &ch, 1) > 0) {
 				if (ch == 'q') break;
-				else if (ch == 'p') toggle_play_pause(conn);
-				else if (ch == 'f' || ch == 'l') mpd_run_seek_current(conn, 2, true);
-				else if (ch == 'b' || ch == 'h') mpd_run_seek_current(conn, -3, true);
-				else if (ch == 'j') handleNavUp(conn, &qc, queue);
-				else if (ch == 'J') handlePageDown(conn, &qc, queue); 
-				else if (ch == 'k') handleNavDown(conn, &qc, queue);
-				else if (ch == 'K') handlePageUp(conn, &qc, queue); 
-				else if (ch == '\r') playSelected(conn, &qc, queue);
-				else if (ch == 'G') jumpToBottom(conn, &qc, queue); 
-				else if (ch == 'g') jumpToTop(conn, &qc, queue); 
-				else if (ch == '.') volumeUp(conn); 
-				else if (ch == ',') volumeDown(conn); 
+				switch (mode) {
+					case MODE_QUEUE: 
+						switch (ch) {
+							case '\t': 
+								mode = MODE_BROWSER; 
+								clearViewArea(); 
+								drawDirectoryHeader();
+								displayEntries(entries, &nav);
+
+								break;
+							case 'p' : toggle_play_pause(conn);
+							case 'f' : mpd_run_seek_current(conn, 2, true); break;
+							case 'b' : mpd_run_seek_current(conn, -3, true); break;
+							case 'l' : mpd_run_seek_current(conn, 2, true); break;
+							case 'h' : mpd_run_seek_current(conn, -3, true); break;
+							case 'j' : handleNavDown(conn, &qc, queue); break;
+							case 'J' : handlePageDown(conn, &qc, queue); break;
+							case 'k' : handleNavUp(conn, &qc, queue); break;
+							case 'K' : handlePageUp(conn, &qc, queue); break;
+							case '\r': playSelected(conn, &qc, queue); break;
+							case 'G' : jumpToBottom(conn, &qc, queue); break;
+							case 'g' : jumpToTop(conn, &qc, queue); break;
+							case '.' : volumeUp(conn); break;
+							case ',' : volumeDown(conn); break;
+							default: break;
+						}
+					break;
+					case MODE_BROWSER: 
+
+						switch (ch) {
+							case '\t': 
+								mode = MODE_QUEUE; 
+								clearViewArea();
+								draw_headers(); 
+								draw_queue(conn, queue, &qc); 
+								break;
+							case 'j': directoryNavDown(&nav, entries); break; 
+							case 'k': directoryNavUp(&nav, entries); break; 
+							case 'l': directoryNavForward(conn, &nav, entries); break;
+							case 'h': directoryNavBack(conn, &nav, entries); break;
+
+
+							default: break;
+
+						}
+					break;
+
+				}
 			}
 		}
 

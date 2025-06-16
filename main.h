@@ -10,6 +10,8 @@
 #define MAX_ARTIST_LEN 40 
 #define MAX_ALBUM_LEN 48
 #define MAX_SONGS 10240
+#define MAX_DEPTH 10
+#define MAX_ENTRIES 1024
 
 
 typedef struct {
@@ -53,6 +55,20 @@ typedef struct {
 	int qlen;
 } QueueData;
 
+typedef struct {
+	char name[512];
+	bool is_dir;
+} Entry;
+
+typedef struct {
+	int selected;
+	int s_offset;
+	int vlines;
+	int entryCount;
+	int depth;
+	char pathStack[MAX_DEPTH][512];
+} DirState;
+
 // Escapes.c
 void cls(); 
 void cursor_h(); 
@@ -92,9 +108,13 @@ void draw_progress_bar(SongStatsWidget *widget);
 void draw_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc); 
 void draw_headers();
 void drawVolume(struct mpd_connection *connection); 
+void clearViewArea(); 
+void drawDirectoryHeader(); 
+void displayEntries(Entry *entries, DirState *state); 
 
 // Mpd Functions
 void toggle_play_pause(struct mpd_connection *conn); 
+int listDirectory(struct mpd_connection *connection, const char *path, Entry *entries); 
 
 // input.c
 void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
@@ -106,5 +126,9 @@ void jumpToBottom(struct mpd_connection *connection, QueueData *qc, SongEntry *q
 void jumpToTop(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
 void volumeUp(struct mpd_connection *connection); 
 void volumeDown(struct mpd_connection *connection); 
+void directoryNavDown(DirState *state, Entry *entries); 
+void directoryNavUp(DirState *state, Entry *entries); 
+void directoryNavForward(struct mpd_connection *connection, DirState *state, Entry *entries); 
+void directoryNavBack(struct mpd_connection *connection, DirState *state, Entry *entries); 
 
 #endif
