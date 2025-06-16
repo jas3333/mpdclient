@@ -66,6 +66,7 @@ typedef struct {
 	int vlines;
 	int entryCount;
 	int depth;
+	int previous[MAX_DEPTH];
 	char pathStack[MAX_DEPTH][512];
 } DirState;
 

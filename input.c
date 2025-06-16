@@ -90,6 +90,7 @@ void directoryNavForward(struct mpd_connection *connection, DirState *state, Ent
 	if (entries[state->selected].is_dir) {
 		strncpy(state->pathStack[state->depth], entries[state->selected].name, sizeof(state->pathStack[state->depth]));
 		state->entryCount = listDirectory(connection, state->pathStack[state->depth], entries);
+		state->previous[state->depth] = state->selected;
 		state->depth++;
 		state->selected = 0;
 		clearViewArea();
@@ -102,7 +103,7 @@ void directoryNavBack(struct mpd_connection *connection, DirState *state, Entry 
 	if (state->depth != 0) {
 		state->depth--;
 		state->entryCount = listDirectory(connection, state->pathStack[state->depth - 1], entries);
-		state->selected = 0;
+		state->selected = state->previous[state->depth];
 		state->s_offset = 0;
 		clearViewArea();
 	}
