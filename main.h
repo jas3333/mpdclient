@@ -98,7 +98,7 @@ void getCenter(int *y, int *x, int length);
 void update_song_stats_widget(struct mpd_connection *conn, SongStatsWidget *widget);
 void update_mpd_status_widget(struct mpd_connection *conn, MPDStatusWidget *widget); 
 void update_now_playing_widget(struct mpd_connection *conn, NowPlayingWidget *widget); 
-void load_queue(struct mpd_connection *conn, SongEntry *queue, int *queue_len); 
+void load_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc); 
 
 // draw.c
 void draw_song_stats_widget(SongStatsWidget *widget);

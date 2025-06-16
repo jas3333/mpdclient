@@ -48,3 +48,7 @@ int listDirectory(struct mpd_connection *connection, const char *path, Entry *en
 	mpd_response_finish(connection);
 	return count;
 }
+
+void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entry *entries, QueueData *qc) {
+	mpd_run_add(connection, entries[state->selected].name);
+}

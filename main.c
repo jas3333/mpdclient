@@ -33,7 +33,6 @@ int main() {
 
 	SongEntry queue[MAX_SONGS];
 	int queue_len = 0;
-	load_queue(conn, queue, &queue_len);
 
 	// Queue config
 	QueueData qc;
@@ -53,6 +52,7 @@ int main() {
 	// Queue length
 	qc.qlen = queue_len;
 
+	load_queue(conn, queue, &qc);
 	draw_queue(conn, queue,  &qc);
 	draw_headers();
 	drawVolume(conn);
@@ -120,6 +120,10 @@ int main() {
 							case 'k': directoryNavUp(&nav, entries); break; 
 							case 'l': directoryNavForward(conn, &nav, entries); break;
 							case 'h': directoryNavBack(conn, &nav, entries); break;
+							case 'a': 
+								mpd_run_add(conn, entries[nav.selected].name);
+								load_queue(conn, queue, &qc);
+								break;
 
 
 							default: break;

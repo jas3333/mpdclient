@@ -95,7 +95,7 @@ void update_mpd_queue_widget(struct mpd_connection *conn) {
 
 }
 
-void load_queue(struct mpd_connection *conn, SongEntry *queue, int *queue_len) {
+void load_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc) {
 	int queue_index = 0;
 
 	mpd_send_list_queue_meta(conn);
@@ -118,7 +118,7 @@ void load_queue(struct mpd_connection *conn, SongEntry *queue, int *queue_len) {
 		queue_index++;
 	}
 
-	*queue_len = queue_index;
+	qc->qlen = queue_index;
 
 	mpd_response_finish(conn);
 }
