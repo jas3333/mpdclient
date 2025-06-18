@@ -41,8 +41,10 @@ void handlePageUp(struct mpd_connection *connection, QueueData *qc, SongEntry *q
 }
 
 void playSelected(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {
-	mpd_run_play_pos(connection, qc->q_index);
-	draw_queue(connection, queue, qc);
+	if (qc->qlen > 0) {
+		mpd_run_play_pos(connection, qc->q_index);
+		draw_queue(connection, queue, qc);
+	}
 }
 
 void jumpToBottom(struct mpd_connection *connection, QueueData *qc, SongEntry *queue) {

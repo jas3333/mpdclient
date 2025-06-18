@@ -71,11 +71,15 @@ void deleteToCursor() {
 	fflush(stdout);
 }
 
+void deleteToBegin() {
+	printf("\x1b[1J");
+	fflush(stdout);
+}
+
 void setBGColor(int color) {
 	printf("\x1b[48;5;%dm", color);
 	fflush(stdout);
 }
-
 
 void moveCursorX(int yCoord, int percent) {
     int rows, cols;

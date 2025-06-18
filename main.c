@@ -76,7 +76,7 @@ int main() {
 		FD_SET(STDIN_FILENO, &readfds);
 
 		timeout.tv_sec = 0;
-		timeout.tv_usec = 16000;
+		timeout.tv_usec = 12000;
 		int ready = select(STDIN_FILENO + 1, &readfds, NULL, NULL, &timeout);
 
 		if (FD_ISSET(STDIN_FILENO, &readfds)) {
@@ -97,7 +97,7 @@ int main() {
 								drawDirectoryHeader();
 								displayEntries(entries, &nav);
 								break;
-							case 'p' : toggle_play_pause(conn);
+							case 'p' : toggle_play_pause(conn, &qc); break;
 							case 'f' : mpd_run_seek_current(conn, 2, true); break;
 							case 'b' : mpd_run_seek_current(conn, -3, true); break;
 							case 'l' : mpd_run_seek_current(conn, 2, true); break;
@@ -116,10 +116,16 @@ int main() {
 								load_queue(conn, queue, &qc);
 								draw_queue(conn, queue, &qc); 
 								break;
-							case 'D': 
-								mpd_run_clear(conn);
+							case 'n': 
+								mpd_run_delete(conn, qc.q_index);
 								load_queue(conn, queue, &qc);
 								draw_queue(conn, queue, &qc); 
+								break;
+							case 'D': 
+								clearQueue(conn, queue, &qc);
+								// mpd_run_clear(conn);
+								// load_queue(conn, queue, &qc);
+								// draw_queue(conn, queue, &qc); 
 								break;
 							default: break;
 						}
@@ -141,7 +147,7 @@ int main() {
 								break;
 							case '.' : volumeUp(conn); break;
 							case ',' : volumeDown(conn); break;
-							case 'p' : toggle_play_pause(conn);
+							case 'p' : toggle_play_pause(conn, &qc);
 							case 'f' : mpd_run_seek_current(conn, 2, true); break;
 							case 'b' : mpd_run_seek_current(conn, -3, true); break;
 							case 'j': directoryNavDown(&nav, entries); break; 
@@ -162,6 +168,14 @@ int main() {
 				}
 			}
 		}
+
+		if (mode == MODE_QUEUE) draw_queue(conn, queue, &qc);
+
+		move_cursor(4, 20);
+		deleteToCursor();
+		move_cursor(4, 1);
+		printf("Tracks: %d/%d", qc.q_index + 1, qc.qlen);
+
 
 		update_now_playing_widget(conn, &nowPlaying);
 		draw_now_playing_widget(&nowPlaying);

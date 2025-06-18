@@ -95,6 +95,7 @@ void setBGColor(int color);
 void setBold(); 
 void resetModes(); 
 void moveCursorX(int yCoord, int percent); 
+void deleteToBegin(); 
 
 // Terminal.c
 void initTerm(); 
@@ -122,11 +123,12 @@ void drawDirectoryHeader();
 void displayEntries(Entry *entries, DirState *state); 
 
 // Mpd Functions
-void toggle_play_pause(struct mpd_connection *conn); 
+void toggle_play_pause(struct mpd_connection *conn, QueueData *qc); 
 int listDirectory(struct mpd_connection *connection, const char *path, Entry *entries); 
 void setAlert(Alert *alert, const char *message, int duration); 
 void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entry *entries, QueueData *qc, Alert *alert); 
 void drawAlert(Alert *alert); 
+void clearQueue(struct mpd_connection *connection, SongEntry *queue, QueueData *qc); 
 
 // input.c
 void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 

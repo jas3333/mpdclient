@@ -21,9 +21,9 @@ void draw_song_stats_widget(SongStatsWidget *widget) {
 }
 
 void draw_mpd_status_widget(MPDStatusWidget *widget) {
+	move_cursor(1, 1);
 	if (!widget->dirty) return;
 
-	move_cursor(1, 1);
 
 	setFGColor(12);
 	setItalic();

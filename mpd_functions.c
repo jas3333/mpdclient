@@ -5,14 +5,16 @@
 #include "main.h"
 
 
-void toggle_play_pause(struct mpd_connection *conn) {
-	struct mpd_status *status = mpd_run_status(conn);
+void toggle_play_pause(struct mpd_connection *conn, QueueData *qc) {
+	if (qc->qlen > 0) {
+		struct mpd_status *status = mpd_run_status(conn);
 
-	enum mpd_state state = mpd_status_get_state(status);
-	mpd_status_free(status);
+		enum mpd_state state = mpd_status_get_state(status);
+		mpd_status_free(status);
 
-	if (state == MPD_STATE_PLAY) mpd_run_pause(conn, true);
-	else mpd_run_play(conn);
+		if (state == MPD_STATE_PLAY) mpd_run_pause(conn, true);
+		else mpd_run_play(conn);
+	}
 }
 
 int listDirectory(struct mpd_connection *connection, const char *path, Entry *entries) {
@@ -89,6 +91,14 @@ void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entr
 	char buffer[1024];
 	snprintf(buffer, sizeof(buffer), "🔔 Added to queue: %s", entries[state->selected].name);
 	setAlert(alert, buffer, 5);
+}
+
+void clearQueue(struct mpd_connection *connection, SongEntry *queue, QueueData *qc) {
+	mpd_run_clear(connection);
+	load_queue(connection, queue, qc);
+	qc->qlen = 0;
+	qc->s_offset = 0;
+	draw_queue(connection, queue, qc);
 }
 
 
