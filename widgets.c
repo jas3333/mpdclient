@@ -69,32 +69,6 @@ void update_mpd_status_widget(struct mpd_connection *conn, MPDStatusWidget *widg
 	mpd_status_free(status);
 }
 
-// void update_mpd_queue_widget(struct mpd_connection *conn) {
-// 	int y;
-// 	int x;
-// 	getTerminalSize(&y, &x);
-// 	int yCount = 4;
-// 	int yCountMax = y - 10;
-//
-//
-// 	mpd_send_list_queue_meta(conn);
-//
-// 	struct mpd_song *song;
-// 	while ((song = mpd_recv_song(conn)) != NULL && yCount <= yCountMax) {
-// 		const char *title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
-// 		const char *artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
-//
-// 		if (title && artist) {
-// 			move_cursor(yCount, 1);
-// 			printf("%s - %s", title, artist);
-// 		}
-//
-// 		yCount++;
-// 		mpd_song_free(song);
-// 	}
-//
-// }
-
 void load_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc) {
 	int queue_index = 0;
 
@@ -122,5 +96,3 @@ void load_queue(struct mpd_connection *conn, SongEntry *queue, QueueData *qc) {
 
 	mpd_response_finish(conn);
 }
-
-

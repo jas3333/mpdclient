@@ -98,10 +98,10 @@ int main() {
 								displayEntries(entries, &nav);
 								break;
 							case 'p' : toggle_play_pause(conn, &qc); break;
-							case 'f' : mpd_run_seek_current(conn, 2, true); break;
-							case 'b' : mpd_run_seek_current(conn, -3, true); break;
-							case 'l' : mpd_run_seek_current(conn, 2, true); break;
-							case 'h' : mpd_run_seek_current(conn, -3, true); break;
+							case 'f' : seekForward(conn, &mpdStatus); break;
+							case 'b' : seekBack(conn, &mpdStatus); break;
+							case 'l' : seekForward(conn, &mpdStatus); break;
+							case 'h' : seekBack(conn, &mpdStatus); break;
 							case 'j' : handleNavDown(conn, &qc, queue); break;
 							case 'J' : handlePageDown(conn, &qc, queue); break;
 							case 'k' : handleNavUp(conn, &qc, queue); break;
@@ -123,9 +123,6 @@ int main() {
 								break;
 							case 'D': 
 								clearQueue(conn, queue, &qc);
-								// mpd_run_clear(conn);
-								// load_queue(conn, queue, &qc);
-								// draw_queue(conn, queue, &qc); 
 								break;
 							default: break;
 						}
@@ -147,9 +144,9 @@ int main() {
 								break;
 							case '.' : volumeUp(conn); break;
 							case ',' : volumeDown(conn); break;
-							case 'p' : toggle_play_pause(conn, &qc);
-							case 'f' : mpd_run_seek_current(conn, 2, true); break;
-							case 'b' : mpd_run_seek_current(conn, -3, true); break;
+							case 'p' : toggle_play_pause(conn, &qc); break;
+							case 'f' : seekForward(conn, &mpdStatus); break;
+							case 'b' : seekBack(conn, &mpdStatus); break;
 							case 'j': directoryNavDown(&nav, entries); break; 
 							case 'k': directoryNavUp(&nav, entries); break; 
 							case 'l': directoryNavForward(conn, &nav, entries); break;

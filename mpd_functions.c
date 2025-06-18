@@ -98,7 +98,19 @@ void clearQueue(struct mpd_connection *connection, SongEntry *queue, QueueData *
 	load_queue(connection, queue, qc);
 	qc->qlen = 0;
 	qc->s_offset = 0;
+	qc->q_index = 0;
 	draw_queue(connection, queue, qc);
+}
+
+void seekForward(struct mpd_connection *conn, MPDStatusWidget *widget) {
+	if (strcmp(widget->status, "Playing") == 0 || strcmp(widget->status, "Paused") == 0) {
+		mpd_run_seek_current(conn, 2, true);
+	}
+}
+void seekBack(struct mpd_connection *conn, MPDStatusWidget *widget) {
+	if (strcmp(widget->status, "Playing") == 0 || strcmp(widget->status, "Paused") == 0) {
+		mpd_run_seek_current(conn, -3, true);
+	}
 }
 
 

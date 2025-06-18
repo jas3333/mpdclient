@@ -129,6 +129,8 @@ void setAlert(Alert *alert, const char *message, int duration);
 void addSelectedToQueue(struct mpd_connection *connection, DirState *state, Entry *entries, QueueData *qc, Alert *alert); 
 void drawAlert(Alert *alert); 
 void clearQueue(struct mpd_connection *connection, SongEntry *queue, QueueData *qc); 
+void seekForward(struct mpd_connection *conn, MPDStatusWidget *widget); 
+void seekBack(struct mpd_connection *conn, MPDStatusWidget *widget); 
 
 // input.c
 void handleNavUp(struct mpd_connection *connection, QueueData *qc, SongEntry *queue); 
