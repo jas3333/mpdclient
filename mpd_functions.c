@@ -69,16 +69,19 @@ void drawAlert(Alert *alert) {
 	getTerminalSize(&y, &x);
 	getCenter(&centerY, &centerX, messageLength);
 
+	move_cursor(y, 1);
+	deleteToEnd();
+
 	time_t timeNow = time(NULL);
 	if (timeNow - alert->startTime >= alert->duration) {
 		alert->display = false;
-		move_cursor(4, 1);
+		move_cursor(y, 1);
 		deleteToEnd();
 	}
 	else {
 		alert->display = true;
-		move_cursor(4, centerX);
-		setFGColor(40);
+		move_cursor(y, centerX);
+		setFGColor(ADD_TO_QUEUE);
 		printf("%s", alert->message);
 		fflush(stdout);
 	}
@@ -112,7 +115,3 @@ void seekBack(struct mpd_connection *conn, MPDStatusWidget *widget) {
 		mpd_run_seek_current(conn, -3, true);
 	}
 }
-
-
-
-

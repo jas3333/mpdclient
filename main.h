@@ -13,6 +13,32 @@
 #define MAX_DEPTH 10
 #define MAX_ENTRIES 1024
 
+// Colors - Queue Mode
+#define SELECTOR_BAR_BG 3
+#define SELECTOR_BAR_FG 0
+#define QUEUE_SONGS_FG 137
+#define ACTIVE_SONG_QUEUE 222
+#define PROGRESS_BAR 137
+#define HEADERS 3
+#define HEADER_TEXT 3
+#define VOLUME 137
+#define TRACK_COUNTER 3
+#define SONG_PROGRESS 3
+#define MPD_STATUS 222 
+#define NOW_PLAYING_ARTIST 3
+#define NOW_PLAYING_TITLE 137
+
+// Colors - Directory Mode
+#define DIRECTORY_SELECTOR_FG 0
+#define DIRECTORY_SELECTOR_BG 3
+#define DIRECTORY_TEXT 3
+#define DIRECTORY_HEADER 3
+#define DIRECTORY_HEADER_TEXT 3
+
+// Colors - Alerts
+#define ADD_TO_QUEUE 3
+
+
 
 typedef struct {
 	char title[MAX_TITLE_LEN];

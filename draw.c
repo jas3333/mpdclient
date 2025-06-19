@@ -15,7 +15,9 @@ void draw_song_stats_widget(SongStatsWidget *widget) {
 	move_cursor(2, 1);
 
 
+	setFGColor(SONG_PROGRESS);
 	printf("%u:%02u / %u:%02u", widget->elapsed / 60, widget->elapsed % 60, widget->total / 60, widget->total % 60);
+	resetColor();
 
 	fflush(stdout);
 }
@@ -25,7 +27,7 @@ void draw_mpd_status_widget(MPDStatusWidget *widget) {
 	if (!widget->dirty) return;
 
 
-	setFGColor(12);
+	setFGColor(MPD_STATUS);
 	setItalic();
 	printf("%-20s", widget->status);
 	widget->dirty = false;
@@ -55,12 +57,15 @@ void draw_now_playing_widget(NowPlayingWidget *widget) {
 
 	move_cursor(1, x);
 	
-	setFGColor(218);
+	setFGColor(NOW_PLAYING_ARTIST);
 	setItalic();
 	printf("%s - ", widget->artist);
 	resetColor();
 	resetItalic();
+
+	setFGColor(NOW_PLAYING_TITLE);
 	printf("%s", widget->title);
+	resetColor();
 
 	fflush(stdout);
 
@@ -86,7 +91,7 @@ void draw_progress_bar(SongStatsWidget *widget) {
 	int empty_width = x - progress_width;
 
 
-	setFGColor(26);
+	setFGColor(PROGRESS_BAR);
 	for (int i = 0; i < progress_width - 1; i++) {
         printf("▋");
 	}
@@ -118,9 +123,10 @@ void draw_headers() {
 	int w_duration	= total_width * 10 / 100;
 
 	move_cursor(6, 1);
+	setFGColor(HEADER_TEXT);
 	printf("%-*s %-*s %-*s %*s", w_artist, "Artist", w_title, "Title", w_album, "Album", w_duration, "Duration");
 
-	setFGColor(26);
+	setFGColor(HEADERS);
 	draw_line(5, 1, x - 1, "⎽");
 	draw_line(7, 1, x - 1, "⎺");
 
@@ -185,12 +191,16 @@ void draw_queue(struct mpd_connection *conn,  SongEntry *queue, QueueData *qconf
 
 			if (song_index == qconfig->q_index) {
 				setItalic();
-				setBGColor(26);
-				setFGColor(255);
+				setBGColor(SELECTOR_BAR_BG);
+				setFGColor(SELECTOR_BAR_FG);
 			}
 
+			else setFGColor(QUEUE_SONGS_FG);
+
+
+
 			if (song_index == song_pos && song_index != qconfig->q_index) {
-				setFGColor(75);
+				setFGColor(ACTIVE_SONG_QUEUE);
 				print_aligned(queue[song_index].artist,  w_artist);
 				putchar(' ');
 				print_aligned(queue[song_index].title,   w_title);
@@ -229,8 +239,8 @@ void drawVolume(struct mpd_connection *connection) {
 	char *volumeBlock = "▊";
 	char *shadeBlock = "░";
 
-	setFGColor(12);
-	moveCursorX(2, 89);
+	setFGColor(VOLUME);
+	moveCursorX(4, 89);
 	deleteToEnd();
 
 	printf("Volume: ");
@@ -253,11 +263,16 @@ void drawDirectoryHeader() {
 	int total_width = x - 2;
 
 	move_cursor(6, 1);
-	printf("Directories:");
 
-	setFGColor(26);
+	setFGColor(DIRECTORY_HEADER_TEXT);
+	printf("Directories:");
+	resetColor();
+
+	setFGColor(DIRECTORY_HEADER);
 	draw_line(5, 1, x - 1, "⎽");
 	draw_line(7, 1, x - 1, "⎺");
+
+	resetColor();
 
 	fflush(stdout);
 
@@ -277,6 +292,11 @@ void clearViewArea() {
 
 void displayEntries(Entry *entries, DirState *state) {
 	resetColor();
+
+	int y, x;
+	getTerminalSize(&y, &x); 
+	int totalWidth = x - 1;
+
 	for (int i = 0; i < state->vlines; i++) {
 		int index = state->s_offset + i;
 		move_cursor(8 + i, 1);
@@ -284,9 +304,10 @@ void displayEntries(Entry *entries, DirState *state) {
 
 		if (index >= state->entryCount) continue;
 		if (index == state->selected) {
-			setBGColor(12);
-			setFGColor(255);
+			setBGColor(DIRECTORY_SELECTOR_BG);
+			setFGColor(DIRECTORY_SELECTOR_FG);
 		}
+		else setFGColor(DIRECTORY_TEXT);
 
 		char buffer[512];
 		strncpy(buffer, entries[index].name, sizeof(buffer));
@@ -297,7 +318,7 @@ void displayEntries(Entry *entries, DirState *state) {
 			token = strtok(NULL, "/");
 		}
 
-		printf("%s", lastToken);
+		printf("%-*s", totalWidth, lastToken);
 
 		if (index == state->selected) resetColor();
 	}

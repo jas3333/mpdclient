@@ -171,7 +171,9 @@ int main() {
 		move_cursor(4, 20);
 		deleteToCursor();
 		move_cursor(4, 1);
+		setFGColor(TRACK_COUNTER);
 		printf("Tracks: %d/%d", qc.q_index + 1, qc.qlen);
+		resetColor();
 
 
 		update_now_playing_widget(conn, &nowPlaying);
