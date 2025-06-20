@@ -33,6 +33,8 @@ void update_now_playing_widget(struct mpd_connection *conn, NowPlayingWidget *wi
 	const char *title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 	const char *artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 
+	if (strcmp(title, widget->title) == 0 && strcmp(artist, widget->artist) == 0) return;
+
 	strncpy(widget->title, title ? title : "Unknown Title", sizeof(widget->title));
 	widget->dirty = true;
 
@@ -42,6 +44,7 @@ void update_now_playing_widget(struct mpd_connection *conn, NowPlayingWidget *wi
 	int totalLength = strlen(widget->title) + strlen(widget->artist);
 	widget->prevWidth = widget->width;
 	widget->width = totalLength;
+	widget->songChange = true;
 
 	mpd_song_free(song);
 }

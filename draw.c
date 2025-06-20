@@ -71,6 +71,7 @@ void draw_now_playing_widget(NowPlayingWidget *widget) {
 
 	
 	widget->dirty = false;
+	widget->songChange = false;
 }
 
 void draw_progress_bar(SongStatsWidget *widget) {
@@ -80,7 +81,6 @@ void draw_progress_bar(SongStatsWidget *widget) {
 	getTerminalSize(&y, &x);
 	int barWidth = x - 1;
 	move_cursor(y - 2, 1);
-	eraseLine();
 
 	if (widget->total == 0) {
 		widget->total = 1;

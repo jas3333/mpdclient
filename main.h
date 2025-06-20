@@ -18,7 +18,7 @@
 #define SELECTOR_BAR_FG 0
 #define QUEUE_SONGS_FG 137
 #define ACTIVE_SONG_QUEUE 222
-#define PROGRESS_BAR 137
+#define PROGRESS_BAR 3
 #define HEADERS 3
 #define HEADER_TEXT 3
 #define VOLUME 137
@@ -54,6 +54,7 @@ typedef struct {
 	int width;
 	int prevWidth;
 	bool dirty;
+	bool songChange;
 } NowPlayingWidget;
 
 typedef struct {

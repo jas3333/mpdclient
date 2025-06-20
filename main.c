@@ -29,7 +29,7 @@ int main() {
 		return 1;
 	}
 
-	NowPlayingWidget	nowPlaying	= { .dirty = true };
+	NowPlayingWidget	nowPlaying	= { .dirty = true, .songChange = false };
 	MPDStatusWidget		mpdStatus	= { .dirty = true };
 	SongStatsWidget		songStatus	= { .dirty = true };
 
@@ -76,7 +76,7 @@ int main() {
 		FD_SET(STDIN_FILENO, &readfds);
 
 		timeout.tv_sec = 0;
-		timeout.tv_usec = 12000;
+		timeout.tv_usec = 32000;
 		int ready = select(STDIN_FILENO + 1, &readfds, NULL, NULL, &timeout);
 
 		if (FD_ISSET(STDIN_FILENO, &readfds)) {
@@ -166,8 +166,6 @@ int main() {
 			}
 		}
 
-		if (mode == MODE_QUEUE) draw_queue(conn, queue, &qc);
-
 		move_cursor(4, 20);
 		deleteToCursor();
 		move_cursor(4, 1);
@@ -177,6 +175,7 @@ int main() {
 
 
 		update_now_playing_widget(conn, &nowPlaying);
+		if (nowPlaying.songChange == true) draw_queue(conn, queue, &qc);
 		draw_now_playing_widget(&nowPlaying);
 
 		update_mpd_status_widget(conn, &mpdStatus);
